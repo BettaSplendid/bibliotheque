@@ -155,4 +155,29 @@ final class BookController
             header("Refresh:5; url=('./src/Views/BorrowBook.php')", true, 303);
         }
     }
+
+    public function show_return_book()
+    {
+        include('./src/Views/BorrowBook.php');
+    }
+
+    public function return_book()
+    {
+        $BookBook = (int) htmlentities(strip_tags($_POST['ISBN']));
+
+        $entityManager = Em::getEntityManager();
+        $repos = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
+
+        try {
+            $book_to_delete = $repos->find($BookBook);
+
+            $placeholder = $book_to_delete->getNb_available();
+            $placeholder++;
+            $book_to_delete->setNb_available($placeholder);
+            $entityManager->flush();
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            header("Refresh:5; url=('./src/Views/BorrowBook.php')", true, 303);
+        }
+    }
 }
