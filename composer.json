@@ -14,6 +14,7 @@
         "symfony/http-foundation": "^6.0",
         "laminas/laminas-mail": "^2.15",
         "symfony/serializer": "^6.0",
-        "doctrine/annotations": "^1.13"
+        "doctrine/annotations": "^1.13",
+        "fzaninotto/faker": "^1.5"
     }
 }
