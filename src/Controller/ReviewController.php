@@ -10,8 +10,6 @@ use Doctrine\ORM\EntityRepository;
 use App\Helpers\EntityManagerHelper as Em;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-use Faker\Factory;
-
 
 
 final class ReviewController
@@ -35,23 +33,26 @@ final class ReviewController
     public function add_review()
     {
         $entityManager = Em::getEntityManager();
-        $repo = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
+        $book_repo = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
+        $review_repo = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Review"));
 
-        
         $book_id = $_POST['ISBN'];
         $note = $_POST['note'];
         $text_part = $_POST['text_part'];
-        
 
         try {
-            $Result = $repo->find($book_id);
+            $Result = $book_repo->find($book_id);
         } catch (\Throwable $th) {
             echo $th->getMessage();
-            die();
+            header("Refresh:5; url=('./src/Views/AddReview.php')", true, 303);
         }
 
+        if (!$Result) {
+            echo ("null variable");
+            header("Refresh:5; url=('./src/Views/AddReview.php')", true, 303);
+        }
 
-        $review_to_post = new Review($Result, $note, $text_part);
+        $review_to_post = new Review($Result, $note, "test");
         $entityManager->persist($review_to_post);
         $entityManager->flush();
     }

@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityRepository;
 use App\Helpers\EntityManagerHelper as Em;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
-use Faker\Factory;
 
 
 
@@ -34,7 +33,6 @@ final class BookController
         $books = $repo->findAll();
         foreach ($books as $key => $value) {
             echo ('<br><br>');
-            var_dump($value);
             print($value->getAssociated_review());
         }
     }
@@ -51,16 +49,15 @@ final class BookController
 
         try {
             $BookBook = htmlentities(strip_tags($_POST['ISBN']));
-            var_dump($BookBook);
             $Result = $repo->find($BookBook);
         } catch (\Throwable $th) {
             echo $th->getMessage();
-            die();
+            header("Refresh:5; url=('./src/Views/AddBook.php')", true, 303);
         }
 
-        if (!$Result == Null) {
+        if (!($Result == Null)) {
             echo ("There's already a book with this ISBN!");
-            die;
+            header("Refresh:5; url=('./src/Views/AddBook.php')", true, 303);
         }
 
         $Book_To_Add = new Book($_POST['ISBN'], $_POST['title'], $_POST['resume'], $_POST['author'], $_POST['editor'], $_POST['nb_available']);
@@ -77,9 +74,9 @@ final class BookController
         $repo = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
         try {
             $Result = $repo->find($id_book);
-            var_dump($Result);
         } catch (\Throwable $th) {
             echo $th->getMessage();
+            header("Refresh:5; url=('./src/Views/ModifyBook.php')", true, 303);
         }
         include('./src/Views/ModifyBook.php');
     }
@@ -99,7 +96,12 @@ final class BookController
         $entityManager = Em::getEntityManager();
         $repo = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
 
+
+        $id_book = preg_replace('/[^A-Za-z0-9\-]/', '', $id_book);
+        $id_book = (int) $id_book;
+
         $book = $repo->find($id_book);
+
 
         $book->setTitle($_POST['title']);
         $book->setResume($_POST['resume']);
@@ -110,7 +112,6 @@ final class BookController
 
         $entityManager->persist($book);
         $entityManager->flush();
-
     }
 
     public function delete_book($id_book)
@@ -126,7 +127,32 @@ final class BookController
             $entityManager->flush();
         } catch (\Throwable $th) {
             echo $th->getMessage();
-            die();
+            header("Refresh:5; url=('./index.php')", true, 303);
+        }
+    }
+
+    public function show_borrow_book()
+    {
+        include('./src/Views/BorrowBook.php');
+    }
+
+    public function borrow_book()
+    {
+        $BookBook = (int) htmlentities(strip_tags($_POST['ISBN']));
+
+        $entityManager = Em::getEntityManager();
+        $repos = new EntityRepository($entityManager, new ClassMetadata("App\Entity\Book"));
+
+        try {
+            $book_to_delete = $repos->find($BookBook);
+
+            $placeholder = $book_to_delete->getNb_available();
+            $placeholder--;
+            $book_to_delete->setNb_available($placeholder);
+            $entityManager->flush();
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            header("Refresh:5; url=('./src/Views/BorrowBook.php')", true, 303);
         }
     }
 }

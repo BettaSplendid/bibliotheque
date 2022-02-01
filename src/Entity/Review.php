@@ -37,10 +37,70 @@ class Review
      */
     private Book $associated_book;
 
-    public function __construct($associated_book, $grade, $textcomment )
+    public function __construct(Book $associated_book, int $grade, string $text_comment)
     {
         $this->associated_book = $associated_book;
         $this->grade = $grade;
-        $this->textcomment = $textcomment;
+        $this->text_comment = $text_comment;
+    }
+
+    /**
+     * Get the value of text_comment
+     */ 
+    public function getText_comment()
+    {
+        return $this->text_comment;
+    }
+
+    /**
+     * Set the value of text_comment
+     *
+     * @return  self
+     */ 
+    public function setText_comment($text_comment)
+    {
+        $this->text_comment = $text_comment;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of grade
+     */ 
+    public function getGrade()
+    {
+        return $this->grade;
+    }
+
+    /**
+     * Set the value of grade
+     *
+     * @return  self
+     */ 
+    public function setGrade($grade)
+    {
+        $this->grade = $grade;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of review_id
+     */ 
+    public function getReview_id()
+    {
+        return $this->review_id;
+    }
+
+    /**
+     * Set the value of review_id
+     *
+     * @return  self
+     */ 
+    public function setReview_id($review_id)
+    {
+        $this->review_id = $review_id;
+
+        return $this;
     }
 }
